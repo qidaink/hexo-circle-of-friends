@@ -13,11 +13,33 @@ class GetUrl:
                 parser = getattr(self,"get_"+theme+"_url")
                 async_link = parser(response,queue)
                 return async_link
+    # 原来的 common 主题友链适配
+    # def get_common_url(self,response,queue):
+    #     avatar = response.css('.cf-friends img::attr(src)').extract()
+    #     link = response.css('.cf-friends a::attr(href)').extract()
+    #     name = response.css('.cf-friends a::text').extract()
+    #     self.handle(avatar, link, name, queue)
+    # 我的 NexT 主题友链获取策略适配
+    def get_common_url(self,response, queue):
+        avatar = response.css('.flink-list .info img::attr(src)').extract()
+        if not avatar:
+            avatar = response.css('.flink-list a img::attr(src)').extract()
+        if not avatar:
+            avatar = response.css('.flink-list a .info img::attr(src)').extract()
+        if not avatar:
+            avatar = response.css('.flink-list a img::attr(src)').extract()
+        if not avatar:
+            avatar = response.css('.flink .site-card .info img::attr(src)').extract()
 
-    def get_common_url(self,response,queue):
-        avatar = response.css('.cf-friends img::attr(src)').extract()
-        link = response.css('.cf-friends a::attr(href)').extract()
-        name = response.css('.cf-friends a::text').extract()
+        link = response.css('.flink-list a::attr(href)').extract()
+        if not link:
+            link = response.css('.flink .site-card::attr(href)').extract()
+
+        name = response.css('.flink-list .flink-sitename::text').extract()
+        if not name:
+            name = response.css('.flink-list a .flink-item-name::text').extract()
+        if not name:
+            name = response.css('.flink .site-card .info .title::text').extract()
         self.handle(avatar, link, name, queue)
 
     def get_butterfly_url(self,response, queue):
